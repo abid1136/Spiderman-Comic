@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ComicVerse — Comics Catalog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --accent: #f7931e;
+            --dark: #16213e;
+            --bg: #0f1724;
+            --light: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.04);
+            --card-shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(135deg, #0b1220 0%, #101827 100%);
+            color: var(--light);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* three-d background (subtle) */
+        .three-d-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            perspective: 1000px
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 12px;
+            background-size: cover;
+            background-position: center;
+            opacity: .75;
+            will-change: transform;
+            filter: contrast(.9) saturate(.9)
+        }
+
+        .bg-1 {
+            width: 320px;
+            height: 420px;
+            top: 6%;
+            left: 4%;
+            background-image: url('https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&w=600&q=60');
+            transform: rotateY(12deg) rotateX(8deg) translateZ(-100px);
+            animation: float1 22s infinite ease-in-out
+        }
+
+        .bg-2 {
+            width: 260px;
+            height: 360px;
+            right: 6%;
+            top: 60%;
+            background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=60');
+            transform: rotateY(-16deg) rotateX(-6deg) translateZ(-150px);
+            animation: float2 26s infinite ease-in-out
+        }
+
+        .bg-3 {
+            width: 200px;
+            height: 300px;
+            left: 18%;
+            bottom: 8%;
+            background-image: url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=600&q=60');
+            transform: rotateY(10deg) rotateX(14deg) translateZ(-200px);
+            animation: float3 30s infinite ease-in-out
+        }
+
+        @keyframes float1 {
+
+            0%,
+            100% {
+                transform: rotateY(12deg) rotateX(8deg) translateZ(-100px) translateY(0)
+            }
+
+            50% {
+                transform: rotateY(18deg) rotateX(12deg) translateZ(-80px) translateY(-18px)
+            }
+        }
+
+        @keyframes float2 {
+
+            0%,
+            100% {
+                transform: rotateY(-16deg) rotateX(-6deg) translateZ(-150px) translateY(0)
+            }
+
+            50% {
+                transform: rotateY(-12deg) rotateX(-10deg) translateZ(-130px) translateY(20px)
+            }
+        }
+
+        @keyframes float3 {
+
+            0%,
+            100% {
+                transform: rotateY(10deg) rotateX(14deg) translateZ(-200px) translateY(0)
+            }
+
+            50% {
+                transform: rotateY(6deg) rotateX(18deg) translateZ(-180px) translateY(-14px)
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            inset: 0 auto auto 0;
+            z-index: 1000;
+            background: rgba(10, 12, 20, 0.7);
+            backdrop-filter: blur(8px);
+            width: 100%;
+            padding: 14px 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .4)
+        }
+
+        .nav-inner {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none
+        }
+
+        .logo i {
+            font-size: 1.4rem;
+            color: var(--accent)
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        .nav-menu a {
+            color: var(--light);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500
+        }
+
+        .nav-menu a.active {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #081222
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 20px
+        }
+
+        /* Page header area */
+        .page-hero {
+            padding: 100px 20px 24px;
+            text-align: center;
+            position: relative
+        }
+
+        .page-hero h1 {
+            margin: 0;
+            font-size: 2.4rem;
+            line-height: 1.05;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 6px 30px rgba(0, 0, 0, .6)
+        }
+
+        .page-hero p {
+            opacity: .85;
+            margin-top: 10px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        /* Controls */
+        .controls {
+            max-width: 1200px;
+            margin: 20px auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 0 12px;
+            flex-wrap: wrap
+        }
+
+        .search {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: var(--glass);
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04)
+        }
+
+        .search input {
+            flex: 1;
+            background: transparent;
+            border: 0;
+            outline: none;
+            color: var(--light);
+            font-size: 0.95rem
+        }
+
+        .select,
+        .sort {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 8px 10px;
+            border-radius: 10px;
+            color: var(--light);
+            font-weight: 600
+        }
+
+        .controls .small {
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer
+        }
+
+        /* Grid */
+        .catalog {
+            max-width: 1300px;
+            margin: 18px auto;
+            padding: 0 12px 60px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 18px
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px var(--card-shadow);
+            border: 1px solid rgba(255, 107, 53, 0.06);
+            transform-style: preserve-3d;
+            transition: transform .35s ease, box-shadow .35s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:focus {
+            outline: 3px solid rgba(255, 107, 53, 0.12)
+        }
+
+        .cover {
+            height: 340px;
+            display: block;
+            width: 100%;
+            object-fit: cover
+        }
+
+        .meta {
+            padding: 12px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .title {
+            font-size: 1.05rem;
+            color: var(--accent);
+            font-weight: 700
+        }
+
+        .author {
+            font-size: 0.9rem;
+            opacity: .9
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            color: var(--light);
+            opacity: .85;
+            flex: 1
+        }
+
+        .tag-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            opacity: .95
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(4deg);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, .55)
+        }
+
+        .card img {
+            transition: transform .45s ease;
+            will-change: transform
+        }
+
+        .card:hover img {
+            transform: scale(1.04) translateZ(20px)
+        }
+
+        /* Controls footer */
+        .grid-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+            gap: 12px
+        }
+
+        .btn {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            color: #081222;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 0;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .btn.ghost {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--light)
+        }
+
+        /* Modal / reader skeleton */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000
+        }
+
+        .modal {
+            width: 92%;
+            max-width: 1000px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #071229 0%, #081424 100%);
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .6)
+        }
+
+        .modal-top {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .modal-cover {
+            width: 220px;
+            min-width: 160px;
+            border-radius: 8px;
+            overflow: hidden
+        }
+
+        .modal-cover img {
+            width: 100%;
+            display: block
+        }
+
+        .modal-body {
+            padding-left: 10px;
+            flex: 1
+        }
+
+        .modal-body h3 {
+            margin: 0 0 6px 0;
+            color: var(--accent)
+        }
+
+        .modal-body p {
+            opacity: .95;
+            line-height: 1.4
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px
+        }
+
+        /* small screens */
+        @media(max-width:880px) {
+            .modal-top {
+                flex-direction: column;
+                align-items: stretch
+            }
+
+            .modal-cover {
+                width: 100%
+            }
+
+            .modal-body {
+                padding-left: 0
+            }
+        }
+
+        @media(max-width:720px) {
+            .nav-menu {
+                display: none
+            }
+
+            .nav-toggle {
+                display: block
+            }
+
+            .controls {
+                padding: 0 12px
+            }
+
+            .page-hero h1 {
+                font-size: 1.8rem
+            }
+
+            .cover {
+                height: 260px
+            }
+        }
+
+        /* reduce motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="three-d-bg" aria-hidden="true">
+        <div class="bg-element bg-1"></div>
+        <div class="bg-element bg-2"></div>
+        <div class="bg-element bg-3"></div>
+    </div>
+
+    <!-- NAVBAR (same style as homepage) -->
+    <nav class="navbar" role="navigation" aria-label="Main">
+        <div class="nav-inner">
+            <a class="logo" href="#">
+                <i class="fas fa-book-open" aria-hidden="true"></i>
+                <span>ComicVerse</span>
+            </a>
+
+            <ul class="nav-menu" role="menubar" aria-label="Primary">
+                <li><a href="index.html" role="menuitem">Home</a></li>
+                <li><a href="comic.html" class="active" role="menuitem" aria-current="page">Comics</a></li>
+                <li><a href="genres.html" role="menuitem">Genres</a></li>
+                <li><a href="author.html" role="menuitem">Authors</a></li>
+                <li><a href="about.html" role="menuitem">About</a></li>
+            </ul>
+
+            <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><i
+                    class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="page-hero" role="banner">
+        <h1>Explore Comics — Catalog</h1>
+        <p>Search, filter and discover comics with interactive 3D cards and a lightweight reader preview. Click a card
+            to open details and start reading.</p>
+    </header>
+
+    <!-- controls -->
+    <section class="controls" aria-label="catalog controls">
+        <div class="search" role="search">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input id="searchInput" type="search" placeholder="Search by title, author or keyword..."
+                aria-label="Search comics">
+            <button id="clearSearch" class="small" title="Clear search" aria-label="Clear search">✕</button>
+        </div>
+
+        <select id="genreSelect" class="select" aria-label="Filter by genre">
+            <option value="all">All genres</option>
+        </select>
+
+        <select id="sortSelect" class="sort" aria-label="Sort">
+            <option value="popularity">Sort: Popular</option>
+            <option value="newest">Newest</option>
+            <option value="title">Title (A–Z)</option>
+        </select>
+
+        <button id="resetFilters" class="small" title="Reset filters">Reset</button>
+    </section>
+
+    <!-- catalog -->
+    <main class="catalog" id="catalog" role="main">
+        <div id="grid" class="grid" aria-live="polite" aria-busy="false"></div>
+
+        <div class="grid-footer">
+            <button id="loadMore" class="btn">Load more</button>
+            <button id="showAll" class="btn ghost">Show all</button>
+        </div>
+    </main>
+
+    <!-- Modal (hidden by default) -->
+    <div id="modalRoot" aria-hidden="true"></div>
+
+    <!-- Footer (same look) -->
+    <footer style="margin-top:40px;padding:36px 20px;background:linear-gradient(180deg,#08111b,#061024);">
+        <div
+            style="max-width:1200px;margin:0 auto;display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1;min-width:220px">
+                <h3 style="color:var(--accent);margin:0 0 8px 0">ComicVerse</h3>
+            </div>
+            <div style="min-width:220px">
+                <h4 style="color:var(--accent);margin:0 0 8px 0">Explore</h4>
+                <ul style="list-style:none;padding:0;margin:0;opacity:.9">
+                    <li><a href="#" style="text-decoration:none;color:var(--light);opacity:.9">All Comics</a></li>
+                    <li><a href="#" style="text-decoration:none;color:var(--light);opacity:.9">New Releases</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:18px;opacity:.7">© <span id="yearFooter"></span> ComicVerse — All
+            rights reserved.</div>
+    </footer>
+
+    <script>
+        // ---------- Data: sample comics array ----------
+        const COMICS = [
+            { id: 'c1', title: 'Cosmic Guardians', author: 'Alex Johnson', genres: ['Sci-Fi', 'Action'], desc: 'A team of interstellar heroes battles cosmic threats to protect the universe.', cover: 'https://images.unsplash.com/photo-1635805737707-575885ab0820?auto=format&fit=crop&w=800&q=60', year: 2025, popularity: 98 },
+            { id: 'c2', title: 'Neon Samurai', author: 'Maya Chen', genres: ['Cyberpunk', 'Action'], desc: 'In a neon-lit metropolis a samurai fights corporate tyranny.', cover: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=60', year: 2024, popularity: 90 },
+            { id: 'c3', title: 'Mystic Realms', author: 'David Smith', genres: ['Fantasy', 'Adventure'], desc: 'A young mage discovers her destiny and the secrets of a dying realm.', cover: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=800&q=60', year: 2023, popularity: 86 },
+            { id: 'c4', title: 'Space Pirates', author: 'Omar Rodriguez', genres: ['Sci-Fi', 'Adventure'], desc: 'A rogue crew of space pirates embarks on epic adventures across the galaxy.', cover: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=800&q=60', year: 2022, popularity: 79 },
+            { id: 'c5', title: 'Shadow Hunters', author: 'Lisa Wong', genres: ['Horror', 'Urban'], desc: 'Hunters defend humanity from creatures that hide in the shadows.', cover: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=60', year: 2021, popularity: 84 },
+            { id: 'c6', title: 'Future Wars', author: 'Robert Kim', genres: ['Dystopia', 'Action'], desc: 'Factions battle for control in a broken future.', cover: 'https://images.unsplash.com/photo-1580477667995-2b94f01c9516?auto=format&fit=crop&w=800&q=60', year: 2020, popularity: 82 },
+            { id: 'c7', title: 'Solar Knights', author: 'A. Torres', genres: ['Sci-Fi', 'Fantasy'], desc: 'Knights harness solar power to protect a dying star system.', cover: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=60', year: 2025, popularity: 75 },
+            { id: 'c8', title: 'Arcane Academy', author: 'N. Patel', genres: ['Fantasy', 'Slice-of-life'], desc: 'Students at an academy learn magic—and secrets.', cover: 'FBCD_2025_MarvelsVoices.avif', year: 2024, popularity: 88 },
+            { id: 'c9', title: 'City of Neon', author: 'D. Rivera', genres: ['Cyberpunk', 'Thriller'], desc: 'Crime and neon collide in a city without mercy.', cover: 'https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=900&q=60', year: 2023, popularity: 80 },
+            { id: 'c10', title: 'Golem Makers', author: 'H. Singh', genres: ['Fantasy', 'Adventure'], desc: 'Artisans craft stone guardians that come to life.', cover: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=60', year: 2022, popularity: 70 },
+            // ... duplicate/manually add more if you like for testing
+        ];
+
+        // ---------- Global state ----------
+        let VISIBLE = [];          // currently filtered+sorted list
+        let SHOW_COUNT = 6;        // items shown initially
+        const STEP = 6;
+
+        // Elements
+        const gridEl = document.getElementById('grid');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearch');
+        const genreSelect = document.getElementById('genreSelect');
+        const sortSelect = document.getElementById('sortSelect');
+        const loadMoreBtn = document.getElementById('loadMore');
+        const showAllBtn = document.getElementById('showAll');
+        const modalRoot = document.getElementById('modalRoot');
+        const yearFooter = document.getElementById('yearFooter');
+
+        // Set year
+        if (yearFooter) yearFooter.textContent = new Date().getFullYear();
+
+        // Populate genre options (unique)
+        function populateGenres() {
+            const set = new Set();
+            COMICS.forEach(c => c.genres.forEach(g => set.add(g)));
+            const genres = Array.from(set).sort();
+            genres.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                genreSelect.appendChild(opt);
+            });
+        }
+
+        // Apply filters and sort
+        function applyFilters() {
+            const q = searchInput.value.trim().toLowerCase();
+            const genre = genreSelect.value;
+            const sortBy = sortSelect.value;
+
+            VISIBLE = COMICS.filter(c => {
+                // search in title, author, desc
+                const text = (c.title + ' ' + c.author + ' ' + c.desc + ' ' + (c.genres || []).join(' ')).toLowerCase();
+                if (q && !text.includes(q)) return false;
+                if (genre !== 'all' && !c.genres.includes(genre)) return false;
+                return true;
+            });
+
+            // Sorting
+            if (sortBy === 'popularity') VISIBLE.sort((a, b) => b.popularity - a.popularity);
+            else if (sortBy === 'newest') VISIBLE.sort((a, b) => b.year - a.year);
+            else if (sortBy === 'title') VISIBLE.sort((a, b) => a.title.localeCompare(b.title));
+
+            // reset visible count if filter changed
+            renderGrid(true);
+        }
+
+        // Render grid with progressive loading
+        function renderGrid(reset = false) {
+            gridEl.setAttribute('aria-busy', 'true');
+            if (reset) gridEl.innerHTML = '';
+            const toShow = VISIBLE.slice(0, SHOW_COUNT);
+            // clear and rerender when resetting
+            if (reset) {
+                gridEl.innerHTML = '';
+            } else {
+                // remove existing placeholders if any
+            }
+
+            toShow.forEach(c => {
+                // skip if already exists (on incremental)
+                if (document.getElementById('card-' + c.id)) return;
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.id = 'card-' + c.id;
+                card.tabIndex = 0;
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', c.title + ' by ' + c.author);
+                card.innerHTML = `
+          <img class="cover" src="${c.cover}" alt="${c.title} cover" loading="lazy">
+          <div class="meta">
+            <div class="title">${c.title}</div>
+            <div class="author">By ${c.author} • ${c.year}</div>
+            <div class="desc">${c.desc}</div>
+            <div class="tag-row">${c.genres.map(g => `<span class="tag">${g}</span>`).join('')}</div>
+          </div>
+        `;
+                // click/keyboard open modal
+                card.addEventListener('click', () => openModal(c.id));
+                card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(c.id); } });
+
+                // Add tilt handlers (desktop only)
+                attachTilt(card);
+
+                gridEl.appendChild(card);
+            });
+
+            // update Load more / Show all availability
+            const remaining = Math.max(0, VISIBLE.length - SHOW_COUNT);
+            loadMoreBtn.disabled = remaining === 0;
+            showAllBtn.disabled = VISIBLE.length <= SHOW_COUNT;
+
+            gridEl.setAttribute('aria-busy', 'false');
+        }
+
+        // attach tilt/parallax behavior for each card
+        function attachTilt(card) {
+            const image = card.querySelector('img');
+            function move(e) {
+                if (window.innerWidth <= 720) return;
+                const rect = card.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                const px = (clientX - rect.left) / rect.width;
+                const py = (clientY - rect.top) / rect.height;
+                const rx = (py - 0.5) * 12; // rotateX
+                const ry = (px - 0.5) * -12; // rotateY
+                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`;
+                if (image) {
+                    const tx = (px - 0.5) * -18;
+                    const ty = (py - 0.5) * -12;
+                    image.style.transform = `scale(1.06) translate3d(${tx}px, ${ty}px, 20px)`;
+                }
+            }
+            function leave() {
+                card.style.transition = 'transform 350ms ease';
+                card.style.transform = '';
+                if (image) image.style.transition = 'transform 420ms ease';
+                if (image) image.style.transform = '';
+                setTimeout(() => { card.style.transition = ''; if (image) image.style.transition = ''; }, 500);
+            }
+            card.addEventListener('mousemove', move);
+            card.addEventListener('mouseleave', leave);
+            card.addEventListener('touchmove', (ev) => move(ev.touches ? ev.touches[0] : ev), { passive: true });
+            card.addEventListener('touchend', leave);
+        }
+
+        // Modal: shows details + reader skeleton
+        function openModal(id) {
+            const comic = COMICS.find(c => c.id === id);
+            if (!comic) return;
+            modalRoot.innerHTML = `
+        <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="${comic.title} details">
+          <div class="modal" role="document">
+            <div style="display:flex;justify-content:flex-end">
+              <button id="closeModal" aria-label="Close" class="btn" style="background:transparent;color:var(--light);border:1px solid rgba(255,255,255,0.04)">✕</button>
+            </div>
+            <div class="modal-top" style="margin-top:6px">
+              <div class="modal-cover"><img src="${comic.cover}" alt="${comic.title} cover"></div>
+              <div class="modal-body">
+                <h3>${comic.title}</h3>
+                <div style="opacity:.9;margin-bottom:8px">By ${comic.author} • ${comic.year} • ${comic.genres.join(', ')}</div>
+                <p>${comic.desc}</p>
+                <div class="modal-actions">
+                  <button id="startReading" class="btn">Start Reading</button>
+                  <button id="favBtn" class="btn ghost">Add to library</button>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:12px;opacity:.85;font-size:.95rem">Preview: Use the reader skeleton below (sample) — the full reader would replace this area in production.</div>
+            <div style="margin-top:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:8px">
+              <div style="height:320px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));color:rgba(255,255,255,0.65)"></div>
+            </div>
+          </div>
+        </div>
+      `;
+            modalRoot.setAttribute('aria-hidden', 'false');
+
+            // focus management
+            const closeModal = document.getElementById('closeModal');
+            closeModal.focus();
+            closeModal.addEventListener('click', closeModalFn);
+            document.getElementById('startReading').addEventListener('click', () => alert('Open full reader for: ' + comic.title));
+
+            // close on backdrop click
+            document.querySelector('.modal-backdrop').addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-backdrop')) closeModalFn();
+            });
+
+            // Esc key closes
+            function onKey(e) { if (e.key === 'Escape') closeModalFn(); }
+            window.addEventListener('keydown', onKey);
+
+            function closeModalFn() {
+                modalRoot.innerHTML = '';
+                modalRoot.setAttribute('aria-hidden', 'true');
+                window.removeEventListener('keydown', onKey);
+                // return focus to card
+                const card = document.getElementById('card-' + comic.id);
+                if (card) card.focus();
+            }
+        }
+
+        // Live events
+        searchInput.addEventListener('input', debounce(() => applyFilters(), 220));
+        clearSearchBtn.addEventListener('click', () => { searchInput.value = ''; searchInput.focus(); applyFilters(); });
+        genreSelect.addEventListener('change', applyFilters);
+        sortSelect.addEventListener('change', applyFilters);
+        document.getElementById('resetFilters').addEventListener('click', () => {
+            searchInput.value = ''; genreSelect.value = 'all'; sortSelect.value = 'popularity'; SHOW_COUNT = STEP; applyFilters();
+        });
+
+        loadMoreBtn.addEventListener('click', () => {
+            SHOW_COUNT += STEP; renderGrid();
+        });
+
+        showAllBtn.addEventListener('click', () => {
+            SHOW_COUNT = VISIBLE.length; renderGrid();
+        });
+
+        // Simple debounce util
+        function debounce(fn, wait = 200) {
+            let t;
+            return function (...args) {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), wait);
+            };
+        }
+
+        // Parallax background subtle movement
+        (function () {
+            const bgEls = document.querySelectorAll('.bg-element');
+            function pointer(e) {
+                const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX) || cx;
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY) || cy;
+                const dx = (clientX - cx) / cx;
+                const dy = (clientY - cy) / cy;
+                bgEls.forEach((el, idx) => {
+                    const depth = (idx + 1) * 10;
+                    const tx = -dx * depth;
+                    const ty = -dy * (depth * 0.6);
+                    el.style.transform = el.style.transform.split('translate3d(')[0] + ` translate3d(${tx}px, ${ty}px, 0)`;
+                });
+            }
+            window.addEventListener('mousemove', pointer);
+            window.addEventListener('touchmove', (ev) => pointer(ev.touches ? ev.touches[0] : ev), { passive: true });
+        })();
+
+        // Simple nav toggle for small screens (same as homepage)
+        (function () {
+            const toggle = document.querySelector('.nav-toggle');
+            const menu = document.querySelector('.nav-menu');
+            toggle.addEventListener('click', () => {
+                const shown = menu.style.display === 'flex';
+                menu.style.display = shown ? 'none' : 'flex';
+                toggle.setAttribute('aria-expanded', String(!shown));
+            });
+            // Ensure correct initial display on resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 720) menu.style.display = 'flex';
+                else menu.style.display = 'none';
+            });
+            // initial
+            if (window.innerWidth <= 720) menu.style.display = 'none';
+        })();
+
+        // Accessibility: show focus outlines only for keyboard users
+        (function () {
+            function handleFirstTab(e) {
+                if (e.key === 'Tab') { document.body.classList.add('show-focus'); window.removeEventListener('keydown', handleFirstTab); }
+            }
+            window.addEventListener('keydown', handleFirstTab);
+        })();
+
+        // Load initial data
+        (function init() {
+            populateGenres();
+            SHOW_COUNT = STEP;
+            applyFilters();
+        })();
+
+    </script>
+</body>
+
+</html>

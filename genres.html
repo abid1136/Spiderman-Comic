@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComicVerse - Genres</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* --- Basic Reset --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; background: #0d0d0d; color: #fff; overflow-x: hidden; }
+
+    /* --- Navbar --- */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0,0,0,0.7);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav a { color: #fff; text-decoration: none; margin: 0 1rem; transition: 0.3s; }
+    nav a:hover { color: #00bfff; }
+
+    /* --- 3D Background --- */
+    .background {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #1a1a1a, #000);
+      z-index: -1;
+      overflow: hidden;
+    }
+    .background span {
+      position: absolute;
+      display: block;
+      width: 20px; height: 20px;
+      background: rgba(0, 191, 255, 0.2);
+      animation: float 20s linear infinite;
+      border-radius: 50%;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) translateX(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) translateX(50vw) rotate(360deg); }
+    }
+
+    /* --- Genre Grid --- */
+    .genre-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 4rem 2rem;
+    }
+    .genre-card {
+      background: #111;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      perspective: 1000px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .genre-card:hover {
+      transform: rotateY(10deg) rotateX(10deg) scale(1.05);
+      box-shadow: 0 20px 40px rgba(0,191,255,0.4);
+    }
+    .genre-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .genre-card-content {
+      padding: 1rem;
+    }
+    .genre-card-content h3 { margin-bottom: 0.5rem; color: #00bfff; }
+    .genre-card-content p { font-size: 0.9rem; color: #ccc; }
+
+    /* --- Modal --- */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 200;
+    }
+    .modal.active { opacity: 1; pointer-events: auto; }
+    .modal-content {
+      background: #111;
+      padding: 2rem;
+      border-radius: 15px;
+      max-width: 500px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-content h3 { margin-bottom: 1rem; color: #00bfff; }
+    .modal-content p { margin-bottom: 1.5rem; color: #ccc; }
+    .modal-content button {
+      padding: 0.8rem 1.5rem;
+      background: #00bfff;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .modal-content button:hover { background: #009acd; }
+    .modal-close {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    /* --- Footer --- */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(0,0,0,0.7);
+      color: #aaa;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .genre-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Background -->
+  <div class="background">
+    <span style="top:10%; left:20%; animation-duration:18s;"></span>
+    <span style="top:40%; left:80%; animation-duration:25s;"></span>
+    <span style="top:70%; left:50%; animation-duration:20s;"></span>
+    <!-- Add more floating particles as needed -->
+  </div>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo"><a href="index.html">ComicVerse</a></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="comic.html">Comics</a>
+      <a href="genres.html">Genres</a>
+    </div>
+  </nav>
+
+  <!-- Genre Grid -->
+  <section class="genre-grid">
+    <div class="genre-card" data-genre="Sci-Fi" data-desc="Explore futuristic worlds, advanced tech, and epic space adventures.">
+      <img src="Comic-1.jpg" alt="Sci-Fi">
+      <div class="genre-card-content">
+        <h3>Sci-Fi</h3>
+        <p>Futuristic tech and space adventures.</p>
+      </div>
+    </div>
+    <div class="genre-card" data-genre="Fantasy" data-desc="Magic, mythical creatures, and enchanting lands await you.">
+      <img src="Comic-Book-Genre.jpg" alt="Fantasy">
+      <div class="genre-card-content">
+        <h3>Fantasy</h3>
+        <p>Magic and mythical realms.</p>
+      </div>
+    </div>
+    <div class="genre-card" data-genre="Superhero" data-desc="Follow legendary heroes and epic battles to save the world.">
+      <img src="NR-240612-S.jpg" alt="Superhero">
+      <div class="genre-card-content">
+        <h3>Superhero</h3>
+        <p>Heroes saving the day.</p>
+      </div>
+    </div>
+    <!-- Add more genres as needed -->
+  </section>
+
+  <!-- Modal -->
+  <div class="modal" id="genreModal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h3 id="modalTitle">Genre Title</h3>
+      <p id="modalDesc">Genre description goes here...</p>
+      <button id="viewComicsBtn">View Comics</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 ComicVerse. All Rights Reserved.
+  </footer>
+
+  <script>
+    // --- Modal Script ---
+    const genreCards = document.querySelectorAll('.genre-card');
+    const modal = document.getElementById('genreModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const viewBtn = document.getElementById('viewComicsBtn');
+    const closeBtn = document.querySelector('.modal-close');
+
+    genreCards.forEach(card => {
+      card.addEventListener('click', () => {
+        modalTitle.textContent = card.dataset.genre;
+        modalDesc.textContent = card.dataset.desc;
+        viewBtn.onclick = () => {
+          window.location.href = `comics.html?genre=${encodeURIComponent(card.dataset.genre)}`;
+        };
+        modal.classList.add('active');
+      });
+    });
+
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    window.addEventListener('click', e => { if(e.target === modal) modal.classList.remove('active'); });
+  </script>
+
+</body>
+</html>
